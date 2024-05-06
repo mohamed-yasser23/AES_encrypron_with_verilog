@@ -73,6 +73,7 @@ if ( i <10 )
 begin
 reg_state[i-1] = state[i-1];
 i=i+1;
+flag=0;
 end
 else if (i == 10)
 begin
@@ -93,34 +94,7 @@ i=i+1;
 flag=1;
 end
 //else
-//i=1;               during runtime if pipeline is needed
-end
-
-endmodule
-
-module Main_tb;
-reg clk;
-
-reg [127:0] In;
-reg [127:0] Key;
-wire [127:0] Out;
-wire [6:0] Seg1;
-wire [6:0] Seg2;
-wire [6:0] Seg3;
-wire LED;
-
-AES_128 uut (clk, In, Key ,Out ,Seg1,Seg2,Seg3,LED);
-initial
-begin
-clk=0;
-In=128'h00112233445566778899aabbccddeeff;
-Key=128'h000102030405060708090a0b0c0d0e0f;
-$monitor("out = %h\nSEG1 = %b\nSEG2 = %b\nSEG3 = %b\nLED = %b\n\n",Out , Seg1 , Seg2 , Seg3 , LED);
-end 
-
-always 
-begin
-#50  clk= !clk ; 
+//i=1;          during runtime if pipeline is needed
 end
 
 endmodule
