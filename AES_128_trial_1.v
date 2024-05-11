@@ -1,6 +1,6 @@
 
 
-module A_AES_128 ( clk ,In , Key ,  Out , Seg1 , Seg2 , Seg3 , LED);
+module A_AES_128 #(parameter Nk =4 , parameter Nr = 10)( clk ,In , Key ,  Out , Seg1 , Seg2 , Seg3 , LED);
 input clk;
 input [127:0] In;
 input [127:0] Key ;
@@ -12,64 +12,72 @@ output [6:0] Seg3;
 output LED;
 
 
-wire led;
+wire led1, led2;
+reg flag;
 wire[127:0] Outcipher;
 wire [127:0] Outdecipher;
 reg [7:0]count;
 reg [127:0] theoutput;
 
-reg flag;
+wire [128*(Nr+1)-1:0] RoundKeys;
 
-wire [128*(10+1)-1:0] RoundKeys;
-
-
+Key_Generator  #(Nk,Nr) K1 (Key , RoundKeys);
 
 Showing_LS_Byte BCD (Out[7:0], Seg1 , Seg2 , Seg3 );
 
-cipherComp K1(clk ,  In , Key , Outcipher, led);
-deciphertComp K2 (clk , Outcipher, Key , Outdecipher, led);
+cipherComp #(Nr) K2(clk ,  In , RoundKeys , Outcipher, led1);
+deciphertComp #(Nr) K3 (clk , Outcipher, RoundKeys , Outdecipher, led2);
 
 
 
-initial begin
+initial 
+begin
 count=8'd0;
 end
-always @ (posedge clk )
+
+
+always @ (posedge clk)
 begin 
 if (count == 0)
 begin
 theoutput <= In;
 count = count+1;
+flag = led1;
 end
-else if (count <=10 )
+else if (count <=Nr )
 begin
 theoutput<=Outcipher;
 count = count+1;
+flag = led1;
 end
-else if (count == 11)
+else if (count == Nr+1)
 begin
 theoutput<=Outcipher;
 count = count+1;
+flag = led1;
 end
-else if (count == 12)
+else if (count == Nr+2)
 begin 
 theoutput <= Outdecipher;
 count = count +1 ;
+flag = led2;
 end 
-else if (count <= 21)
+else if (count <= (2*Nr+1))
 begin
 theoutput<=Outdecipher;
 count = count +1;
+flag = led2;
 end
-else if (count == 22)
+else if (count == (2*Nr+2))
 begin
 theoutput<=Outdecipher;
 count = count +1;
+flag = led2;
 end
 $display("round = %d , Out =%h ,theoutput=%h",count,Out,theoutput);
 end
 assign Out = theoutput;
-assign LED =led;
+assign LED =flag;
 
 endmodule
 

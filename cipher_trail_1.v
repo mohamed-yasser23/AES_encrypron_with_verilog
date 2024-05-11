@@ -1,7 +1,7 @@
-module cipherComp (clk ,  In , Key , Out, LeD);
+module cipherComp #( parameter Nr = 10)  (clk ,  In , RoundKeys, Out, LeD);
 input clk;
 input [127:0] In;
-input [127:0] Key ;
+input [128*(Nr+1)-1:0] RoundKeys ;
 output reg [127:0] Out; 
 output LeD;
 reg flag;
@@ -9,16 +9,15 @@ reg flag;
 reg [127:0] reg_state ;
 reg [127:0] theout;
 wire [127:0] state1,state2,state3;
-wire [128*(10+1)-1:0] RoundKeys;
 wire [127:0] OutSUB ;
 wire [127:0] OutSHIFT ;
 wire [127:0] OutMix ;
 reg [7:0]count;
 
-Key_Generator K1 (Key , RoundKeys);
 
-addRoundKey K2(In , RoundKeys[(128*(10+1)-1) -: 128] , state1);
-encryptRound K3(reg_state,RoundKeys[(((128*(10+1))-1)-128*(count)) -:128], state2);
+
+addRoundKey K2(In , RoundKeys[(128*(Nr+1)-1) -: 128] , state1);
+encryptRound K3(reg_state,RoundKeys[(((128*(Nr+1))-1)-128*(count)) -:128], state2);
 
 subBytes sub (reg_state,OutSUB);
 Shiftrows row (OutSUB,OutSHIFT);
@@ -32,12 +31,20 @@ end
 
 always @ ( state1 , state2 , state3 ) 
 begin
-if (count < 1 ) 
+if (count < 1 ) begin
 theout<= state1;
-else if (count <10)
+flag=0;
+end
+else if (count < Nr)
+begin
 theout<= state2;
-else if (count == 10)
+flag=0;
+end
+else if (count == Nr)
+begin
 theout <= state3;
+flag = 1;
+end
 end 
 always@(posedge clk)
 begin
@@ -47,18 +54,15 @@ if (count<1)
 begin
 reg_state <= state1;
 count = count+1;
-flag = 0;
 end
-else if (count < 10)
+else if (count < Nr)
 begin
 reg_state <= state2; 
-flag=0;
 count = count +1;
 end
-else if (count == 10)
+else if (count == Nr)
 begin
 reg_state <= state3;
-flag = 1;
 count = count +1;
 end
 end
