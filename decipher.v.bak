@@ -1,5 +1,5 @@
-module decipherDE # (parameter Nk = 4 , parameter Nr = 10)(clk,reset,in,out,key);
-input reset;
+module decipherDE # (parameter Nk = 4 , parameter Nr = 10)(clk,in,out,key);
+
 input clk;
 input [127:0] in;
 input [(32*Nk)-1:0] key;
@@ -9,7 +9,7 @@ reg [127:0] reg_in,temp;
 wire [127:0] ST4,ST5,ST6,invOutSHIFT,invOutSUB;
 wire [128*(Nr+1)-1:0] RoundKeys;
 
-Key_Generator_AES   #(Nk,Nr)  k (key,RoundKeys);
+Key_Generator   #(Nr,Nk)  k (key,RoundKeys);
 addRoundKey K12(in , RoundKeys[127:0] , ST4);
 
 decryptRound DE(reg_in,RoundKeys[(((128*(Nr+1))-1)-128*(Nr-count)) -:128],ST5);
@@ -18,16 +18,9 @@ Invshiftrows invrow (reg_in,invOutSHIFT);
 inverseSubBytes invsub (invOutSHIFT,invOutSUB);
 addRoundKey invaddkey (invOutSUB,RoundKeys[(128*(Nr+1)-1) -: 128],ST6);
 
-always @ (posedge clk,posedge reset) begin
+always @ (posedge clk) begin
 $display ("ST4 = %h,ST5 = %h,ST6 = %h", ST4,ST5,ST6);
 $display ("invRound = %d", count);
-
-if(reset)  begin
-
-    count <= 4'd0;
-	 temp<=128'h0;
-end
-else begin
 if(count==4'd0) begin
     reg_in<=ST4;
     temp<=ST4;
@@ -42,7 +35,6 @@ else if(count==Nr) begin
     reg_in<=ST5;
     temp<=ST6;
     count <= 4'd0;
-end
 end
 end
 assign out=temp;
