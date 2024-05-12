@@ -66,7 +66,7 @@ always @(*) begin
 end
 endmodule
 
-module Showing_LS_Byte(
+module Showing_LS_Byte(input clk,
 input  [7:0] _byte,
 output [6:0] Seg1,
 output [6:0] Seg2,
@@ -79,4 +79,8 @@ binary_to_BCD encoder(_byte,O,T,H);
 SSD S1(O,Seg1);
 SSD S2(T,Seg2);
 SSD S3({1'b0,1'b0,H},Seg3);
+always @(posedge clk) begin 
+  $display ("Units= %d tens=%d Hunds= %d",O,T,H);
+end
+
 endmodule

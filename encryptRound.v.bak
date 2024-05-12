@@ -9,7 +9,7 @@ wire [127:0] OutMix ;
 
 subBytes S1 (statePrev , OutSUB );
 Shiftrows S2 ( OutSUB , OutSHIFT);
-MixCol mc (OutSHIFT,OutMix);
+mixColumns S4(OutSHIFT,OutMix);
 addRoundKey S3(OutMix , RoundKey  , stateNext);
 
 
