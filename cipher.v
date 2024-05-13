@@ -1,8 +1,10 @@
-module cipherEN # (parameter Nk = 4 , parameter Nr = 10)(clk,reset,in,out,key);
+module cipherEN # (parameter Nk = 4 , parameter Nr = 10)(clk,Mode1,Mode2,Mode3,reset,in,out,key);
 ////
 input clk;
 input reset;
-
+input Mode1;
+  input Mode2;
+ input Mode3;
 input [127:0] in;
 input [(32*Nk)-1:0] key;
 output [127:0] out;
@@ -27,24 +29,48 @@ $display ("ST1 = %h,ST2 = %h,ST3 = %h", ST1,ST2,ST3);
 if(reset)  begin
     count<= 4'd0;
 
-	 temp<=128'h0;
+	temp<=128'h0;
 
 end 
 else begin
-if(count==4'd0) begin
-    reg_in<=ST1;
+  if(count==4'd0) begin
+    if( Mode1 ||  Mode2 ||  Mode3) begin
+         reg_in<=ST1;
     temp<=ST1;
     count<=count +  4'd1;
-end
+
+     end
+     else begin
+        //reg_in<=ST1;
+    //temp<=ST1;
+    count<=count ;
+
+     end
+   end
 else if(count< Nr &&count > 4'd0 ) begin
+    if( Mode1 ||  Mode2 ||  Mode3) begin
     reg_in<=ST2;
     temp<=ST2;
     count<=count + 4'd1;
+    end
+         else begin
+    //reg_in<=ST2;
+    //temp<=ST2;
+    count<=count ;
+    end
 end
 else if(count== Nr) begin
+            if( Mode1 ||  Mode2 ||  Mode3) begin
     reg_in<=ST2;
     temp<=ST3;
     count<= 4'd0;
+            end
+   else begin
+    // reg_in<=ST2;
+    //temp<=ST3;
+    count<= count;
+ 
+end
 end
 end
 end

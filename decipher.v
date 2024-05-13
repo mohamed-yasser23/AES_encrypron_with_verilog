@@ -1,6 +1,9 @@
-module decipherDE # (parameter Nk = 4 , parameter Nr = 10)(clk,reset,in,out,key);
+module decipherDE # (parameter Nk = 4 , parameter Nr = 10)(clk,Mode1,Mode2,Mode3,reset,in,out,key);
 input reset;
 input clk;
+input Mode1;
+  input Mode2;
+ input Mode3;
 input [127:0] in;
 input [(32*Nk)-1:0] key;
 output [127:0] out;
@@ -29,19 +32,45 @@ if(reset)  begin
 end
 else begin
 if(count==4'd0) begin
+                if( Mode1 ||  Mode2 ||  Mode3) begin
     reg_in<=ST4;
     temp<=ST4;
     count<=count + 4'd1;
+                end 
+                else begin
+
+ //reg_in<=ST4;
+   // temp<=ST4;
+    count<=count ;
+
+                end
 end
 else if(count<Nr) begin
+                    if( Mode1 ||  Mode2 ||  Mode3) begin
+
     reg_in<=ST5;
     temp<=ST5;
     count<=count + 4'd1;
+                    end
+                    else begin
+// reg_in<=ST5;
+  //  temp<=ST5;
+    count<=count ;
+
+                    end
 end
 else if(count==Nr) begin
+     if( Mode1 ||  Mode2 ||  Mode3) begin
+
     reg_in<=ST5;
     temp<=ST6;
     count <= 4'd0;
+     end
+     else begin
+       // reg_in<=ST5;
+   // temp<=ST6;
+    count <= count;
+     end
 end
 end
 end
