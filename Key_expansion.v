@@ -1,7 +1,7 @@
-module Key_Generator (key ,w); // the no. of key needed for nr = 10 is 11
+module Key_Generator_AES#(parameter  nk = 4,parameter nr = 10 ) (key ,w); // the no. of key needed for nr = 10 is 11
           // for bouns : replace 11 with (nr+1)
-input [0:127] key ;
-output reg [0: (128*11)-1] w;
+input [0:(32*nk)-1] key ;
+output reg [0: (128*(nr+1))-1] w;
 reg [0:31] temp;
 reg [0:31] Outrot;
 reg [0:31] Outsub;
@@ -15,20 +15,24 @@ always@* begin
 
 w = key;    //the first round key is the key given itself
 
-for (i = 4 ; i < 44 ; i=i+1) //for bouns : replace 44 -> 4*(nr+1) and 4 -> nk
+for (i = nk ; i < 4*(nr+1) ; i=i+1) //for bouns : replace 44 -> 4*(nr+1) and 4 -> nk
 begin
-temp = w[(128*(10+1) -32) +: 32];
-if ( i%4 == 0 ) 
+temp = w[(128*(nr+1) -32) +: 32];
+if ( i%nk == 0 ) 
 begin 
 Outrot = rotword(temp);
 Outsub = subwords(Outrot);
-rconval = Rcon(i/4);           // 4-> nk
+rconval = Rcon(i/nk);           // 4-> nk
 temp = Outsub ^ rconval;
 end
-newWord = (w[(128*(10+1)-(4*32))+:32] ^ temp);
+else if(nk >6 && i % nk == 4) 
+begin
+temp = subwords(temp);
+end
+newWord = (w[(128*(nr+1)-(nk*32))+:32] ^ temp);
 w= w<<32;
-//w = {w[0 : (128 * (10 + 1) - 32) - 1], newWord};
-w[128*(10+1) -32 +: 32] = newWord;
+
+w[128*(nr+1) -32 +: 32] = newWord;
 end
 end
 

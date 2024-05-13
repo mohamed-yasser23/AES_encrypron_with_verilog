@@ -6,4 +6,7 @@ output [127:0] out;
 
 assign out = key ^ data;
 
+//always@(*)
+//$display("input=%h \t key=%h \t Output = %h \n\n" , data , key , out);
+
 endmodule
