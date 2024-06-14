@@ -3,12 +3,12 @@ encrypts a statment ( words ) using the
 AES logic.
 
 Main features:
--It can encrypt using 
+--It can encrypt using 
  128,192 and 256 bit modes
-- The three modes work independently and
+-- The three modes work independently and
   synchronized together
--swapping between modes is very simple
+--swapping between modes is very simple
 
 disadvantages:
-- both the input statements and the key
-  are hard coded.
+-- both the input statements and the 
+   key are hard coded.
