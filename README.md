@@ -1,6 +1,5 @@
 AES_encryption was a group project that
-encrypts a statment ( words ) using the 
-AES logic.
+encrypts a statment ( words ) using the AES logic.
 
 Main features:
 --It can encrypt using 
