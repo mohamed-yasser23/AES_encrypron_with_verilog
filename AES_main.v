@@ -11,7 +11,7 @@
    wire clks=clk;
    wire resets=reset;
 
-   wire [127:0] pl =128'h00112233445566778899aabbccddeeff;
+   wire [127:0] pl =128'haa112233445566778899aabbccddeeff;
 
    wire [127:0] cOut;
    wire [127:0] DecOut;
@@ -34,7 +34,12 @@
     end
    
     else begin
-    if(Count <= Nr+1) begin 
+	 if(Count==5'd0) begin
+	 seg_DE = pl[7:0];
+	 LED=1'b0;
+	 end
+	 
+    else if(Count <= Nr+1 &&Count>0) begin 
         seg_DE = cOut;
         LED = (cOut==pl) ? 1'b1:1'b0 ;
 
@@ -119,8 +124,8 @@ reg L;
  wire L1, L2 , L3;
 
 wire [127:0] ky1 =128'h000102030405060708090a0b0c0d0e0f;
-wire [191:0] ky2= 192'h000102030405060708090a0b0c0d0e0f1011121314151617;
-wire [255:0] ky3= 256'h000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f; 
+wire [191:0] ky2= 192'h000102030405060708090a0b0c0d0e0f0001020304050607;
+wire [255:0] ky3= 256'h000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f; 
 
 AES_N #(.Nk(4), .Nr(10)) e1(clk, reset,Mode1,Mode2,Mode3, ky1,L1 , OutPut1);
 AES_N #(.Nk(6), .Nr(12)) e2(clk, reset,Mode1,Mode2,Mode3, ky2 ,L2 , OutPut2);
